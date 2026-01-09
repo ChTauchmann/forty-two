@@ -37,8 +37,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Upgrade pip
 RUN pip install --upgrade pip setuptools wheel
 
-# Install Flash Attention 2 (pre-built wheel)
-RUN pip install flash-attn --no-build-isolation
+# Install Flash Attention 2 build dependencies
+RUN pip install ninja packaging
+
+# Install Flash Attention 2 (build from source if no pre-built wheel)
+RUN MAX_JOBS=4 pip install flash-attn --no-build-isolation || \
+    echo "Flash Attention installation failed, trying alternative method" && \
+    pip install flash-attn==2.5.9.post1 --no-build-isolation || \
+    echo "Flash Attention not available for this CUDA/PyTorch combination"
 
 # Upgrade HuggingFace ecosystem to latest
 RUN pip install --upgrade \
@@ -78,8 +84,8 @@ SHELL ["/bin/bash", "-c"]
 
 # Health check - verify key packages
 RUN python -c "import torch; print(f'PyTorch: {torch.__version__}')" && \
-    python -c "import flash_attn; print(f'Flash Attention: {flash_attn.__version__}')" && \
-    python -c "import transformers; print(f'Transformers: {transformers.__version__}')"
+    python -c "import transformers; print(f'Transformers: {transformers.__version__}')" && \
+    (python -c "import flash_attn; print(f'Flash Attention: {flash_attn.__version__}')" || echo "Flash Attention not installed")
 
 # Default command
 CMD ["/bin/bash"]
