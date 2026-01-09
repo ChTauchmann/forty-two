@@ -7,7 +7,7 @@
 
 set -e
 
-IMAGE_NAME="ctctctct/hessian-ml-base"
+IMAGE_NAME="ctctctct/forty-two"
 TAG="${1:-latest}"
 DATE_TAG=$(date +%Y%m%d)
 
@@ -19,7 +19,7 @@ docker build \
     --progress=plain \
     --tag "${IMAGE_NAME}:${TAG}" \
     --tag "${IMAGE_NAME}:${DATE_TAG}" \
-    --tag "${IMAGE_NAME}:py311-pt251-cu124" \
+    --tag "${IMAGE_NAME}:flash-attn" \
     .
 
 echo ""
@@ -28,12 +28,12 @@ echo "========================================"
 echo "Tags created:"
 echo "  - ${IMAGE_NAME}:${TAG}"
 echo "  - ${IMAGE_NAME}:${DATE_TAG}"
-echo "  - ${IMAGE_NAME}:py311-pt251-cu124"
+echo "  - ${IMAGE_NAME}:flash-attn"
 echo ""
 echo "To push to Docker Hub:"
 echo "  docker push ${IMAGE_NAME}:${TAG}"
 echo "  docker push ${IMAGE_NAME}:${DATE_TAG}"
-echo "  docker push ${IMAGE_NAME}:py311-pt251-cu124"
+echo "  docker push ${IMAGE_NAME}:flash-attn"
 echo ""
 echo "To test locally:"
 echo "  docker run --gpus all -it ${IMAGE_NAME}:${TAG} python -c 'import flash_attn; print(flash_attn.__version__)'"

@@ -1,50 +1,33 @@
-# HessianLLM ML Base Image
+# Forty-Two ML Image with Flash Attention
 
-Docker image for ML training with Flash Attention support.
+Docker image based on `mbrack/forty-two` with Flash Attention 2 added.
 
-## Specifications
+## Base Image
 
-| Component | Version |
-|-----------|---------|
-| Base | NVIDIA CUDA 12.4.1 + cuDNN (Ubuntu 22.04) |
-| Python | 3.11 |
-| PyTorch | 2.5.1 |
-| Flash Attention | 2.7.3 |
-| Transformers | 4.47+ |
-| DeepSpeed | 0.16+ |
+Built on top of `mbrack/forty-two:cuda-12.5-pytorch-2.2-gpu-mpi-multimodal` which includes:
+- CUDA 12.5
+- PyTorch 2.2
+- MPI support for distributed training
+- Multimodal capabilities
 
-## Included Packages
+## Additions
 
-### Core ML
-- torch, torchvision, torchaudio
-- flash-attn (pre-built, no compilation needed)
-- transformers, accelerate, datasets, tokenizers
-- peft, trl, bitsandbytes
-- deepspeed
-- vllm
-
-### Evaluation & Tracking
-- evaluate, lm-eval
-- wandb, tensorboard
-
-### System Tools
-- tmux, screen, htop, nvtop, iotop
-- vim, nano, tree, git, git-lfs
-- SSH server for distributed training
+| Component | Description |
+|-----------|-------------|
+| Flash Attention 2 | GPU-optimized attention mechanism |
+| tmux, screen | Terminal multiplexers |
+| htop, nvtop, iotop | System monitoring |
+| vim, nano | Text editors |
+| Latest HuggingFace | transformers, accelerate, peft, trl |
+| lm-eval | Language model evaluation |
 
 ## Building
 
-From a machine with Docker access:
+Builds are automated via GitHub Actions on push to main branch.
 
+For manual builds:
 ```bash
-cd /pfss/mlde/workspaces/mlde_wsp_HessianLLM/tauchmann/docker/hessian-ml-base
 ./build.sh latest
-```
-
-Or manually:
-```bash
-docker build -t ctctctct/hessian-ml-base:latest .
-docker push ctctctct/hessian-ml-base:latest
 ```
 
 ## Usage with Determined AI
@@ -54,7 +37,7 @@ In your shell-config.yaml:
 environment:
   force_pull_image: true
   image:
-    cuda: ctctctct/hessian-ml-base:latest
+    cuda: ctctctct/forty-two:latest
 ```
 
 Then start a shell:
@@ -62,21 +45,19 @@ Then start a shell:
 det shell start --config-file shell-config.yaml -w HessianLLM
 ```
 
-## Verifying Installation
+## Verifying Flash Attention
 
 ```python
 import torch
 import flash_attn
-import transformers
 
 print(f"PyTorch: {torch.__version__}")
 print(f"CUDA available: {torch.cuda.is_available()}")
 print(f"Flash Attention: {flash_attn.__version__}")
-print(f"Transformers: {transformers.__version__}")
 ```
 
 ## Tags
 
 - `latest` - Most recent build
-- `py311-pt251-cu124` - Explicit version tag
+- `flash-attn` - Explicit Flash Attention tag
 - `YYYYMMDD` - Date-based tags for reproducibility

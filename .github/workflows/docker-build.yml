@@ -10,7 +10,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: ctctctct/hessian-ml-base
+  IMAGE_NAME: ctctctct/forty-two
 
 jobs:
   build-and-push:
@@ -36,7 +36,7 @@ jobs:
           images: ${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
-            type=raw,value=py311-pt251-cu124
+            type=raw,value=flash-attn
             type=raw,value={{date 'YYYYMMDD'}}
             type=sha,prefix=
 
