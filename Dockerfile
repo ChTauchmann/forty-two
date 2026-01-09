@@ -70,8 +70,8 @@ RUN pip install --upgrade \
     python-dotenv \
     httpx
 
-# Clean up pip cache
-RUN pip cache purge
+# Clean up pip cache (ignore errors if cache is empty)
+RUN pip cache purge || true
 
 # Set default shell to bash
 SHELL ["/bin/bash", "-c"]
