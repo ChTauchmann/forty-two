@@ -4,11 +4,10 @@ Docker image based on `mbrack/forty-two` with Flash Attention 2 added.
 
 ## Base Image
 
-Built on top of `mbrack/forty-two:cuda-12.5-pytorch-2.2-gpu-mpi-multimodal` which includes:
-- CUDA 12.5
+Built on top of `mbrack/forty-two:cuda-11.8-pytorch-2.2-gpu-mpi-748dda4` which includes:
+- CUDA 11.8
 - PyTorch 2.2
 - MPI support for distributed training
-- Multimodal capabilities
 
 ## Additions
 

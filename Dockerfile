@@ -4,7 +4,7 @@
 # Build: docker build -t ctctctct/forty-two:latest .
 # Push:  docker push ctctctct/forty-two:latest
 
-FROM mbrack/forty-two:cuda-12.5-pytorch-2.2-gpu-mpi-multimodal
+FROM mbrack/forty-two:cuda-11.8-pytorch-2.2-gpu-mpi-748dda4
 
 LABEL maintainer="tauchmann"
 LABEL description="Forty-Two ML training image with Flash Attention"
