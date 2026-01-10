@@ -38,14 +38,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # The base image has torchvision 0.17.2+cu118 which causes issues
 RUN pip uninstall -y torchvision || true
 
-# Install missing training packages (not in base image)
-# Use --no-deps to prevent torch upgrade
-RUN pip install --no-deps peft trl bitsandbytes
-
-# Install their dependencies (excluding torch)
-RUN pip install typer rich
-
-# Verify build completed
+# Skip Python imports during build - they require CUDA runtime
+# Verify packages at runtime instead
 RUN echo "Build complete - verify packages at runtime with CUDA"
 
 # Default command
