@@ -38,15 +38,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # The base image has torchvision 0.17.2+cu118 which causes issues
 RUN pip uninstall -y torchvision || true
 
-# Print versions for verification (no upgrades, no assertions)
-RUN echo "=== Base Image Package Versions ===" && \
-    python -c "import torch; print(f'PyTorch: {torch.__version__}')" && \
-    python -c "import transformers; print(f'Transformers: {transformers.__version__}')" && \
-    python -c "import accelerate; print(f'Accelerate: {accelerate.__version__}')" && \
-    python -c "import peft; print(f'PEFT: {peft.__version__}')" && \
-    python -c "import trl; print(f'TRL: {trl.__version__}')" && \
-    (python -c "import flash_attn; print(f'Flash Attention: {flash_attn.__version__}')" || echo "Flash Attention: requires CUDA") && \
-    echo "=== Build complete ==="
+# Skip Python imports during build - they require CUDA runtime
+# Verify packages at runtime instead
+RUN echo "Build complete - verify packages at runtime with CUDA"
 
 # Default command
 CMD ["/bin/bash"]
