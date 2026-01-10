@@ -66,26 +66,41 @@ RUN pip install --upgrade \
     packaging \
     numpy
 
-# Upgrade/install training libraries (compatible with base PyTorch 2.2)
-RUN pip install --upgrade \
+# Upgrade/install training libraries WITHOUT touching torch
+# Use --no-deps to prevent torch upgrade, then install their deps separately
+RUN pip install --upgrade --no-deps \
     peft \
     trl \
-    bitsandbytes \
-    deepspeed
+    bitsandbytes
 
-# Install evaluation and utilities
-RUN pip install --upgrade \
+# Install deepspeed (needs special handling - don't upgrade, use base version if present)
+RUN pip install --upgrade --no-deps deepspeed || true
+
+# Install evaluation and utilities (--no-deps for torch-dependent packages)
+RUN pip install --upgrade --no-deps \
     evaluate \
-    lm-eval \
+    lm-eval
+
+RUN pip install --upgrade \
     wandb \
     tensorboard
 
-# Install additional utilities
+# Install additional utilities (these don't touch torch)
 RUN pip install --upgrade \
     rich \
     typer \
     python-dotenv \
     httpx
+
+# Install missing dependencies for training libs (excluding torch)
+RUN pip install --upgrade \
+    sentencepiece \
+    protobuf \
+    scipy \
+    scikit-learn \
+    rouge-score \
+    nltk \
+    py7zr
 
 # Clean up pip cache (ignore errors if cache is empty)
 RUN pip cache purge || true
