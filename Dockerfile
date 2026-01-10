@@ -42,15 +42,9 @@ RUN pip install --upgrade pip setuptools wheel
 # The base image has torchvision 0.17.2+cu118 which conflicts with upgraded packages
 RUN pip uninstall -y torchvision || true
 
-# Install Flash Attention 2 build dependencies
+# Flash Attention 2.5.9.post1 is already in base image (mbrack/forty-two)
+# No need to rebuild - just install ninja for any future compilation needs
 RUN pip install ninja packaging
-
-# Install Flash Attention 2 (build from source if no pre-built wheel)
-# Note: This requires matching CUDA version from base image (11.8)
-RUN MAX_JOBS=4 pip install flash-attn --no-build-isolation || \
-    echo "Flash Attention installation failed, trying alternative method" && \
-    pip install flash-attn==2.5.9.post1 --no-build-isolation || \
-    echo "Flash Attention not available for this CUDA/PyTorch combination"
 
 # Upgrade HuggingFace ecosystem (but don't upgrade torch to avoid breaking compatibility)
 RUN pip install --upgrade --no-deps \
@@ -99,13 +93,13 @@ RUN pip cache purge || true
 # Set default shell to bash
 SHELL ["/bin/bash", "-c"]
 
-# Health check - verify key packages work for LLM
-RUN python -c "import torch; print(f'PyTorch: {torch.__version__}')" && \
+# Health check - verify key packages and torch version hasn't changed
+RUN python -c "import torch; v=torch.__version__; print(f'PyTorch: {v}'); assert v.startswith('2.2'), f'ERROR: torch upgraded to {v}, expected 2.2.x'" && \
     python -c "import transformers; print(f'Transformers: {transformers.__version__}')" && \
     python -c "import peft; print(f'PEFT: {peft.__version__}')" && \
     python -c "import trl; print(f'TRL: {trl.__version__}')" && \
     python -c "import accelerate; print(f'Accelerate: {accelerate.__version__}')" && \
-    (python -c "import flash_attn; print(f'Flash Attention: {flash_attn.__version__}')" || echo "Flash Attention not installed")
+    python -c "import flash_attn; print(f'Flash Attention: {flash_attn.__version__}')"
 
 # Default command
 CMD ["/bin/bash"]
